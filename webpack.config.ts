@@ -1,5 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const Dotenv = require('dotenv-webpack');
 
 const { NODE_ENV = 'production' } = process.env;
 
@@ -28,6 +29,7 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
+  plugins: [new Dotenv()],
   watch: NODE_ENV === 'development',
   externals: [nodeExternals()],
 };
