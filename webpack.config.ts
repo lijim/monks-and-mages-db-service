@@ -5,7 +5,7 @@ const Dotenv = require('dotenv-webpack');
 const { NODE_ENV = 'production' } = process.env;
 
 const config = {
-  entry: './index.ts',
+  entry: './src/app.ts',
   target: 'node',
   mode: 'production',
   devtool: 'source-map',
