@@ -34,6 +34,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-unused-vars': 'error',
+    'react/jsx-filename-extension': 'off',
     'typescript-sort-keys/interface': 'error',
     'typescript-sort-keys/string-enum': 'error',
     'import/prefer-default-export': 'off',

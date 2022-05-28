@@ -1,5 +1,4 @@
-import express from 'express';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
 const app = express();
 const { PORT = 5001 } = process.env;
@@ -9,5 +8,6 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 app.listen(PORT, () => {
-  console.log('server started at http://localhost:' + PORT);
+  // eslint-disable-next-line no-console
+  console.log(`server started at http://localhost:${PORT}`);
 });
