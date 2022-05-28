@@ -1,0 +1,8 @@
+# don't lint node_modules
+node_modules
+# don't lint build output
+dist
+.eslintrc.js
+jest.config.js
+setupTests.ts
+coverage

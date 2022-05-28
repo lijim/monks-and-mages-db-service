@@ -1,0 +1,38 @@
+{
+  "name": "monks-and-mages-db-service",
+  "version": "0.0.0",
+  "description": "A NodeJS based express server that provides a persistent data layer for monksandamages.com",
+  "main": "dist/server.bundle.js",
+  "repository": "https://github.com/lijim/monks-and-mages-db-service.git",
+  "author": "Jimmy Li (lijim)",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack && node ."
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.35",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-node-externals": "^2.5.3",
+    "cross-env": "^7.0.3",
+    "dotenv-webpack": "^7.1.0",
+    "eslint": "^8.16.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-typescript-sort-keys": "^2.1.0",
+    "nodemon": "^2.0.16",
+    "prettier": "^2.6.2",
+    "ts-loader": "^9.3.0",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
