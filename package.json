@@ -9,6 +9,7 @@
   "scripts": {
     "build": "webpack",
     "start": "webpack && node .",
+    "dev": "NODE_ENV=development webpack & nodemon .",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "ci": "yarn lint && jest --maxWorkers=2",
     "test": "yarn lint && jest --watchAll"
