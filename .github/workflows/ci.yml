@@ -5,6 +5,9 @@ name: Install / Build / Test
 
 on: [push]
 
+env:
+  DATABASE_URL: postgres://jimmyli:@localhost:5432/monks-and-mages-local
+
 jobs:
     pre_job:
         runs-on: ubuntu-latest
