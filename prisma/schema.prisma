@@ -22,6 +22,7 @@ model SavedDeck {
   name      String
   user      User     @relation(fields: [userUid], references: [uid])
   userUid   String   @db.VarChar(255)
+  skeleton  Json
 }
 
 model GameResult {
