@@ -7,12 +7,12 @@ export const initializeSavedDeckEndpoints = (
   prisma: PrismaClient
 ) => {
   server.get(
-    '/saved_decks/:username',
+    '/saved_decks',
     async (
-      req: Request<{ username: string }, SavedDeck[] | ErrorMessage, EmptyObj>,
+      req: Request<EmptyObj, SavedDeck[] | ErrorMessage, { username: string }>,
       res: Response<SavedDeck[] | ErrorMessage>
     ): Promise<Response<SavedDeck[] | ErrorMessage>> => {
-      const { username } = req.params;
+      const { username } = req.body;
 
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
@@ -25,17 +25,16 @@ export const initializeSavedDeckEndpoints = (
   );
 
   server.post(
-    '/saved_decks/:username',
+    '/saved_decks',
     async (
       req: Request<
-        { username: string },
+        EmptyObj,
         SavedDeck | ErrorMessage,
-        { deckName: string; skeleton: Prisma.JsonArray }
+        { username: string; deckName: string; skeleton: Prisma.JsonArray }
       >,
       res: Response<SavedDeck | ErrorMessage>
     ): Promise<Response<SavedDeck | ErrorMessage>> => {
-      const { username } = req.params;
-      const { deckName, skeleton } = req.body;
+      const { username, deckName, skeleton } = req.body;
 
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
@@ -58,6 +57,74 @@ export const initializeSavedDeckEndpoints = (
         },
       });
       return res.send(newDeck);
+    }
+  );
+
+  server.delete(
+    '/saved_decks',
+    async (
+      req: Request<
+        EmptyObj,
+        SuccessMessage | ErrorMessage,
+        { username: string; deckId: string }
+      >,
+      res: Response<SuccessMessage | ErrorMessage>
+    ) => {
+      const { username, deckId } = req.body;
+
+      if (!username)
+        return res.status(400).send({ message: 'Need a username' });
+      if (!deckId) return res.status(400).send({ message: 'Need a deck id' });
+      // TODO: add unit tests
+      // TODO: add auth0 layer
+      try {
+        await prisma.savedDeck.deleteMany({
+          where: {
+            user: { username },
+            id: deckId,
+          },
+        });
+        return res.send({ message: 'Success' });
+      } catch (error) {
+        return res.status(400).send({
+          message: `Something went wrong in deleting a deck: ${JSON.stringify(
+            error
+          )}`,
+        });
+      }
+    }
+  );
+
+  server.delete(
+    '/saved_decks/all',
+    async (
+      req: Request<
+        EmptyObj,
+        SuccessMessage | ErrorMessage,
+        { username: string }
+      >,
+      res: Response<SuccessMessage | ErrorMessage>
+    ) => {
+      const { username } = req.body;
+
+      if (!username)
+        return res.status(400).send({ message: 'Need a username' });
+      // TODO: add unit tests
+      // TODO: add auth0 layer
+      try {
+        await prisma.savedDeck.deleteMany({
+          where: {
+            user: { username },
+          },
+        });
+        return res.send({ message: 'Success' });
+      } catch (error) {
+        return res.status(400).send({
+          message: `Something went wrong in deleting a deck: ${JSON.stringify(
+            error
+          )}`,
+        });
+      }
     }
   );
 };

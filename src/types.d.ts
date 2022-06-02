@@ -3,3 +3,7 @@ type ErrorMessage = {
 };
 
 type EmptyObj = Record<string, never>;
+
+type SuccessMessage = {
+  message: 'Success';
+};

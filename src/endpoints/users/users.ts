@@ -56,12 +56,12 @@ export const initializeUserEndpoints = (
   );
 
   server.delete(
-    '/users/:uid',
+    '/users',
     async (
-      req: Request<{ uid: string }, User | ErrorMessage, EmptyObj>,
-      res: Response<User | ErrorMessage>
-    ): Promise<Response<User | ErrorMessage>> => {
-      const { uid } = req.params;
+      req: Request<EmptyObj, SuccessMessage | ErrorMessage, { uid: string }>,
+      res: Response<SuccessMessage | ErrorMessage>
+    ): Promise<Response<SuccessMessage | ErrorMessage>> => {
+      const { uid } = req.body;
 
       if (!uid) return res.status(400).send({ message: 'Need a uid' });
       // TODO: add unit tests
@@ -81,15 +81,6 @@ export const initializeUserEndpoints = (
 
         return res.send({ message: 'Success' });
       } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2002'
-        ) {
-          return res
-            .status(400)
-            .send({ message: 'A user with this uid already exists' });
-        }
-
         return res.status(400).send({
           message: `Something went wrong in deleting a user: ${JSON.stringify(
             error
