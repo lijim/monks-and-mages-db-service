@@ -30,7 +30,7 @@ export const initializeSavedDeckEndpoints = (
       req: Request<
         EmptyObj,
         SavedDeck | ErrorMessage,
-        { username: string; deckName: string; skeleton: Prisma.JsonArray }
+        { deckName: string; skeleton: Prisma.JsonArray; username: string }
       >,
       res: Response<SavedDeck | ErrorMessage>
     ): Promise<Response<SavedDeck | ErrorMessage>> => {
@@ -66,7 +66,7 @@ export const initializeSavedDeckEndpoints = (
       req: Request<
         EmptyObj,
         SuccessMessage | ErrorMessage,
-        { username: string; deckId: string }
+        { deckId: string; username: string }
       >,
       res: Response<SuccessMessage | ErrorMessage>
     ) => {
