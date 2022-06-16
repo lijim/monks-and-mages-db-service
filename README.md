@@ -14,6 +14,6 @@ This DB service will:
 Starting commands:
 
 1. `npx prisma migrate dev` to set up your local database (make sure to first install postgreSQL and ideally your DB debugging software of choice, e.g TablePlus)
-2. Run this db-service, the [reverse proxy service](https://github.com/lijim/monks-and-mages-reverse-proxy), and the [main game app](https://github.com/lijim/monks-and-mages)
+2. Run this db-service, the [reverse proxy service](https://github.com/lijim/monks-and-mages-reverse-proxy), and the [main game app](https://github.com/lijim/monks-and-mages) via `yarn dev`
 3. Visit the site at http://localhost:4001/
 4. The api can be accessed now at http://localhost:4001/api
