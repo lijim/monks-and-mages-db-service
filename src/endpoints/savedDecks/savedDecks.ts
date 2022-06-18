@@ -7,12 +7,12 @@ export const initializeSavedDeckEndpoints = (
   prisma: PrismaClient
 ) => {
   server.get(
-    '/saved_decks',
+    '/saved_decks/:username',
     async (
-      req: Request<EmptyObj, SavedDeck[] | ErrorMessage, { username: string }>,
+      req: Request<{ username: string }, SavedDeck[] | ErrorMessage, EmptyObj>,
       res: Response<SavedDeck[] | ErrorMessage>
     ): Promise<Response<SavedDeck[] | ErrorMessage>> => {
-      const { username } = req.body;
+      const { username } = req.params;
 
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
