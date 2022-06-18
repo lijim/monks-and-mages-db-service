@@ -7,7 +7,7 @@ export const initializeSavedDeckEndpoints = (
   prisma: PrismaClient
 ) => {
   server.get(
-    '/saved_decks',
+    '/saved_decks/:username',
     async (
       req: Request<{ username: string }, SavedDeck[] | ErrorMessage, EmptyObj>,
       res: Response<SavedDeck[] | ErrorMessage>
