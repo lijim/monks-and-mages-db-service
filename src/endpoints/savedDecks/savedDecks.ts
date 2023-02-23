@@ -1,6 +1,8 @@
 import { Request, Response, Express } from 'express';
 
 import { Prisma, PrismaClient, SavedDeck } from '@prisma/client';
+import { checkJwt } from '../../authz/checkJWT';
+import { getUserFromJWT } from '../../authz/getUserFromJWT';
 
 export const initializeSavedDeckEndpoints = (
   server: Express,
@@ -8,6 +10,7 @@ export const initializeSavedDeckEndpoints = (
 ) => {
   server.get(
     '/saved_decks/:username',
+    checkJwt,
     async (
       req: Request<{ username: string }, SavedDeck[] | ErrorMessage, EmptyObj>,
       res: Response<SavedDeck[] | ErrorMessage>
@@ -16,6 +19,18 @@ export const initializeSavedDeckEndpoints = (
 
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
+
+      const user = await getUserFromJWT(req.auth?.token);
+
+      if (!user) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      if (user.username !== username) {
+        return res
+          .status(401)
+          .send({ message: `Hey! You can not see another user's decks!` });
+      }
 
       const savedDecks = await prisma.savedDeck.findMany({
         where: { user: { username } },
@@ -26,6 +41,7 @@ export const initializeSavedDeckEndpoints = (
 
   server.post(
     '/saved_decks',
+    checkJwt,
     async (
       req: Request<
         EmptyObj,
@@ -45,6 +61,18 @@ export const initializeSavedDeckEndpoints = (
           .status(400)
           .send({ message: 'Need a deck skeleton in JSON form' });
 
+      const userFromAuth0 = await getUserFromJWT(req.auth?.token);
+
+      if (!userFromAuth0) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      if (userFromAuth0.username !== username) {
+        return res
+          .status(401)
+          .send({ message: `Hey! You can not create another user's decks!` });
+      }
+
       const user = await prisma.user.findFirst({ where: { username } });
       if (!user)
         return res.status(400).send({ message: 'No matching user found' });
@@ -62,6 +90,7 @@ export const initializeSavedDeckEndpoints = (
 
   server.delete(
     '/saved_decks',
+    checkJwt,
     async (
       req: Request<
         EmptyObj,
@@ -76,7 +105,19 @@ export const initializeSavedDeckEndpoints = (
         return res.status(400).send({ message: 'Need a username' });
       if (!deckId) return res.status(400).send({ message: 'Need a deck id' });
       // TODO: add unit tests
-      // TODO: add auth0 layer
+
+      const userFromAuth0 = await getUserFromJWT(req.auth?.token);
+
+      if (!userFromAuth0) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      if (userFromAuth0.username !== username) {
+        return res
+          .status(401)
+          .send({ message: `Hey! You can not delete another user's decks!` });
+      }
+
       try {
         await prisma.savedDeck.deleteMany({
           where: {
@@ -110,7 +151,19 @@ export const initializeSavedDeckEndpoints = (
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
       // TODO: add unit tests
-      // TODO: add auth0 layer
+
+      const userFromAuth0 = await getUserFromJWT(req.auth?.token);
+
+      if (!userFromAuth0) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      if (userFromAuth0.username !== username) {
+        return res
+          .status(401)
+          .send({ message: `Hey! You can not delete another user's decks!` });
+      }
+
       try {
         await prisma.savedDeck.deleteMany({
           where: {
