@@ -1,7 +1,7 @@
 import { auth0 } from './auth0';
 
 // parses the JWT token and uses auth0's node module to determine the user
-export const getUserFromJWT = async (token: string = '.') => {
+export const getUserFromJWT = async (token = '.') => {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
