@@ -1,6 +1,7 @@
 import { Request, Response, Express } from 'express';
 
 import { Prisma, PrismaClient, User } from '@prisma/client';
+import { checkJwt } from '../../authz/checkJWT';
 
 export const initializeUserEndpoints = (
   server: Express,
@@ -8,6 +9,7 @@ export const initializeUserEndpoints = (
 ) => {
   server.get(
     '/users',
+    checkJwt,
     async (
       _: Request<EmptyObj, User[], EmptyObj>,
       res: Response<User[]>
