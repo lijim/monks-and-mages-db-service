@@ -104,7 +104,6 @@ export const initializeSavedDeckEndpoints = (
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
       if (!deckId) return res.status(400).send({ message: 'Need a deck id' });
-      // TODO: add unit tests
 
       const userFromAuth0 = await getUserFromJWT(req.auth?.token);
 
@@ -150,7 +149,6 @@ export const initializeSavedDeckEndpoints = (
 
       if (!username)
         return res.status(400).send({ message: 'Need a username' });
-      // TODO: add unit tests
 
       const userFromAuth0 = await getUserFromJWT(req.auth?.token);
 
