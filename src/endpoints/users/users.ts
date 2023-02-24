@@ -35,8 +35,14 @@ export const initializeUserEndpoints = (
         return res
           .status(400)
           .send({ message: 'Need both a username and a uid' });
-      // TODO: add unit tests
-      // TODO: add auth0 layer
+
+      const apiKey = req.header('x-api-key');
+      if (apiKey !== process.env.API_KEY) {
+        return res
+          .status(401)
+          .send({ message: 'Not authorized!  Missing the right API key' });
+      }
+
       try {
         const user = await prisma.user.create({ data: { username, uid } });
         return res.send(user);
@@ -66,8 +72,14 @@ export const initializeUserEndpoints = (
       const { uid } = req.body;
 
       if (!uid) return res.status(400).send({ message: 'Need a uid' });
-      // TODO: add unit tests
-      // TODO: add auth0 layer
+
+      const apiKey = req.header('x-api-key');
+      if (apiKey !== process.env.API_KEY) {
+        return res
+          .status(401)
+          .send({ message: 'Not authorized!  Missing the right API key' });
+      }
+
       try {
         const deleteUser = prisma.user.delete({
           where: {
