@@ -9,6 +9,7 @@
   "scripts": {
     "build": "webpack",
     "postinstall": "npx prisma generate",
+    "migrate:dev": "npx prisma migrate dev",
     "db:deploy": "npx prisma migrate deploy",
     "start": "webpack && node .",
     "dev": "NODE_ENV=development webpack & nodemon .",

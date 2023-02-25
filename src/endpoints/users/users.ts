@@ -2,6 +2,12 @@ import { Request, Response, Express } from 'express';
 
 import { Prisma, PrismaClient, User } from '@prisma/client';
 import { checkJwt } from '../../authz/checkJWT';
+import { getUserFromJWT } from '../../authz';
+
+interface NewUserRequestBodyParams {
+  uid: string;
+  username: string;
+}
 
 export const initializeUserEndpoints = (
   server: Express,
@@ -19,10 +25,32 @@ export const initializeUserEndpoints = (
     }
   );
 
-  interface NewUserRequestBodyParams {
-    uid: string;
-    username: string;
-  }
+  server.get(
+    '/users/self',
+    checkJwt,
+    async (
+      req: Request<EmptyObj, User, EmptyObj>,
+      res: Response<User | ErrorMessage>
+    ) => {
+      const user = await getUserFromJWT(req.auth?.token);
+
+      if (!user) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      const foundUser = await prisma.user.findUnique({
+        where: {
+          username: user.username,
+        },
+      });
+
+      if (!foundUser) {
+        return res.status(204).send({ message: 'No user found' });
+      }
+
+      return res.send(foundUser);
+    }
+  );
 
   server.post(
     '/users/new_user',
@@ -51,9 +79,10 @@ export const initializeUserEndpoints = (
           error instanceof Prisma.PrismaClientKnownRequestError &&
           error.code === 'P2002'
         ) {
-          return res
-            .status(400)
-            .send({ message: 'A user with this uid already exists' });
+          return res.status(400).send({
+            message:
+              'A user with this uid already exists OR this username is already taken',
+          });
         }
 
         return res
