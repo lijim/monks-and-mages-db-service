@@ -16,6 +16,7 @@ model User {
   wonGames         GameResult[] @relation("WonGames")
   numberOfGamesWon Int          @default(0)
   exp              Int          @default(0)
+  avatarUrl        String       @default("")
 }
 
 model SavedDeck {

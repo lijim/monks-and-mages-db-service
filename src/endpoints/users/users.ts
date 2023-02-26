@@ -3,11 +3,19 @@ import { Request, Response, Express } from 'express';
 import { Prisma, PrismaClient, User } from '@prisma/client';
 import { checkJwt } from '../../authz/checkJWT';
 import { getUserFromJWT } from '../../authz';
+import { LEVELS } from '../../consts/xpSystem';
 
 interface NewUserRequestBodyParams {
   uid: string;
   username: string;
 }
+
+interface ChooseAvatarBodyParams {
+  avatarUrl: string;
+}
+
+const DEFAULT_AVATAR =
+  'https://monksandmages.com/images/units/alert-feline.webp';
 
 export const initializeUserEndpoints = (
   server: Express,
@@ -47,6 +55,60 @@ export const initializeUserEndpoints = (
       if (!foundUser) {
         return res.status(204).send({ message: 'No user found' });
       }
+
+      return res.send(foundUser);
+    }
+  );
+
+  server.patch(
+    '/users/self/choose_avatar',
+    checkJwt,
+    async (
+      req: Request<EmptyObj, User, ChooseAvatarBodyParams>,
+      res: Response<User | ErrorMessage>
+    ) => {
+      const user = await getUserFromJWT(req.auth?.token);
+      const { avatarUrl } = req.body;
+      if (!avatarUrl) {
+        return res.status(400).send({ message: 'Need a avatarUrl field' });
+      }
+
+      if (!user) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      const foundUser = await prisma.user.findUnique({
+        where: {
+          username: user.username,
+        },
+      });
+
+      if (!foundUser) {
+        return res.status(204).send({ message: 'No user found' });
+      }
+
+      if (avatarUrl !== DEFAULT_AVATAR) {
+        const matchingLevel = LEVELS.find((level) => avatarUrl === level.image);
+        if (!matchingLevel) {
+          return res
+            .status(204)
+            .send({ message: 'avatarUrl not in available images' });
+        }
+        if (foundUser.exp < matchingLevel.xpRequired) {
+          return res.status(204).send({
+            message: 'avatarUrl not eligible - not high enough of a level',
+          });
+        }
+      }
+
+      await prisma.user.update({
+        where: {
+          username: user.username,
+        },
+        data: {
+          avatarUrl,
+        },
+      });
 
       return res.send(foundUser);
     }
