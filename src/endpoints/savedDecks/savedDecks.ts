@@ -88,6 +88,64 @@ export const initializeSavedDeckEndpoints = (
     }
   );
 
+  server.patch(
+    '/saved_decks',
+    checkJwt,
+    async (
+      req: Request<
+        EmptyObj,
+        SavedDeck | ErrorMessage,
+        { deckId: string; skeleton: Prisma.JsonArray }
+      >,
+      res: Response<SavedDeck | ErrorMessage>
+    ): Promise<Response<SavedDeck | ErrorMessage>> => {
+      const { deckId, skeleton } = req.body;
+
+      if (!deckId) return res.status(400).send({ message: 'Need a deck id' });
+      if (!skeleton || !Array.isArray(skeleton))
+        return res
+          .status(400)
+          .send({ message: 'Need a deck skeleton in JSON form' });
+
+      const userFromAuth0 = await getUserFromJWT(req.auth?.token);
+
+      if (!userFromAuth0) {
+        return res.status(400).send({ message: 'Need a username' });
+      }
+
+      const user = await prisma.user.findFirst({
+        where: { username: userFromAuth0.username },
+      });
+      if (!user)
+        return res.status(400).send({ message: 'No matching user found' });
+
+      const deck = await prisma.savedDeck.findFirst({
+        where: {
+          id: deckId,
+        },
+      });
+
+      if (!deck) {
+        return res.status(400).send({ message: 'No matching deck found' });
+      }
+      if (deck.userUid !== user.uid) {
+        return res
+          .status(401)
+          .send({ message: "Cannot update another user's deck!" });
+      }
+
+      const newDeck = await prisma.savedDeck.update({
+        where: {
+          id: deckId,
+        },
+        data: {
+          skeleton,
+        },
+      });
+      return res.send(newDeck);
+    }
+  );
+
   server.delete(
     '/saved_decks',
     checkJwt,
