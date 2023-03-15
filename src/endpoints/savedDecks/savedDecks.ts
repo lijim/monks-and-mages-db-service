@@ -46,7 +46,7 @@ export const initializeSavedDeckEndpoints = (
       req: Request<
         EmptyObj,
         SavedDeck | ErrorMessage,
-        { deckName: string; skeleton: Prisma.JsonArray; username: string }
+        { deckName: string; skeleton: Prisma.JsonObject; username: string }
       >,
       res: Response<SavedDeck | ErrorMessage>
     ): Promise<Response<SavedDeck | ErrorMessage>> => {
@@ -56,7 +56,11 @@ export const initializeSavedDeckEndpoints = (
         return res.status(400).send({ message: 'Need a username' });
       if (!deckName)
         return res.status(400).send({ message: 'Need a deck name' });
-      if (!skeleton || !Array.isArray(skeleton))
+      if (
+        !skeleton ||
+        !Array.isArray(skeleton.mainBoard) ||
+        !Array.isArray(skeleton.sideBoard)
+      )
         return res
           .status(400)
           .send({ message: 'Need a deck skeleton in JSON form' });
@@ -95,14 +99,18 @@ export const initializeSavedDeckEndpoints = (
       req: Request<
         EmptyObj,
         SavedDeck | ErrorMessage,
-        { deckId: string; skeleton: Prisma.JsonArray }
+        { deckId: string; skeleton: Prisma.JsonObject }
       >,
       res: Response<SavedDeck | ErrorMessage>
     ): Promise<Response<SavedDeck | ErrorMessage>> => {
       const { deckId, skeleton } = req.body;
 
       if (!deckId) return res.status(400).send({ message: 'Need a deck id' });
-      if (!skeleton || !Array.isArray(skeleton))
+      if (
+        !skeleton ||
+        !Array.isArray(skeleton.mainBoard) ||
+        !Array.isArray(skeleton.sideBoard)
+      )
         return res
           .status(400)
           .send({ message: 'Need a deck skeleton in JSON form' });
